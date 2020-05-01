@@ -20,6 +20,10 @@ const connect = mongoose.connect(url);
 const session = require('express-session');
 const fileStore = require('session-file-store')(session);
 
+var passport = require('passport');
+var authenticate = require('./authenticate');
+
+
 connect.then((db) => {
   console.log('connected correctly to the server');
 }, err => {
@@ -39,23 +43,19 @@ app.use(session({
   store: new fileStore()
 }));
 
+app.use(passport.initialize());
+app.use(passport.session())
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 function auth(req, res, next) {
-  if (!req.session.user) {
+  if (!req.user) {
     var err = new Error('You are not authenticated');
     err.status = 403;
-    next(err);
+    return next(err);
   } else {
-    if (req.session.user == 'authenticated') {
-      next();
-    }
-    else {
-      var err = new Error('You are not authenticated!');
-      err.status = 403;
-      return next(err);
-    }
+    next();
   }
 };
 
