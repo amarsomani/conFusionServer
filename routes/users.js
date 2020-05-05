@@ -8,10 +8,14 @@ var authenticate = require('../authenticate');
 
 UserRouter.use(bodyParser.json());
 /* GET users listing. */
-UserRouter.route('/')
-  .get(function (req, res, next) {
-    res.send('respond with a resource');
-  });
+UserRouter.route('/').get(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+  Users.find({})
+    .then(users => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(users);
+    })
+});
 
 UserRouter.post('/signup', (req, res, next) => {
   Users.register(new Users({ username: req.body.username }),
@@ -26,7 +30,7 @@ UserRouter.post('/signup', (req, res, next) => {
           user.firstname = req.body.firstname;
         }
         if (req.body.lastname) {
-          user.firstname = req.body.lastname;
+          user.lastname = req.body.lastname;
         }
         user.save((err, user) => {
           if (err) {
