@@ -1,7 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
+
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
@@ -10,9 +10,9 @@ var dishRouter = require('./routes/dishRouter');
 var promoRouter = require('./routes/promoRouter');
 var leaderRouter = require('./routes/leaderRouter');
 var uploadRouter = require('./routes/uploadRouter');
+var favoriteRouter = require('./routes/favoriteRouter');
 
 var app = express();
-
 var config = require('./config');
 
 
@@ -61,13 +61,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/dishes', dishRouter);
 app.use('/promotions', promoRouter);
 app.use('/leaders', leaderRouter);
-app.use('/imageUpload', uploadRouter);
+
+app.use('/favorites', favoriteRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
 });
-
+app.use('/imageUpload', uploadRouter);
 // error handler
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development
